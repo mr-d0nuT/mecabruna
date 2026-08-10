@@ -603,7 +603,7 @@ select.sel{padding:9px 13px;border-radius:11px;border:1px solid var(--line);back
   <section id="view-stats" class="hidden">
     <h2 class="sec" data-i18n="statsTitle"></h2>
     <div class="statgrid" style="margin-top:0">
-      <div class="stat"><b id="p1">0</b><span id="p1lbl" data-i18n="pBest"></span></div>
+      <div class="stat"><b id="p1">0</b><span data-i18n="pBest"></span></div>
       <div class="stat"><b id="p2">0</b><span data-i18n="pAvg"></span></div>
       <div class="stat"><b id="p3">0</b><span data-i18n="pSessions"></span></div>
       <div class="stat"><b id="p4">0</b><span data-i18n="pStreak"></span></div>
@@ -746,10 +746,7 @@ continueL:"▶ Continua: {t}|▶ Continuar: {t}|▶ Continue: {t}",
 seeCourse:"Veure el curs|Ver el curso|See the course",
 goalTitle:"🎯 Meta del curs|🎯 Meta del curso|🎯 Course goal",
 gaugeLbl:"el teu rècord · ppm|tu récord · ppm|your record · kpm",
-gaugeLblDrill:"en exercicis de tecles · ppm|en ejercicios de teclas · ppm|in key drills · kpm",
 goalLeft:"Et falten {n} ppm per a la meta de 300|Te faltan {n} ppm para la meta de 300|{n} kpm to go to reach 300",
-goalDrill:"Molt bé! El rècord oficial es comptarà a partir de les lliçons de paraules i textos.|¡Muy bien! El récord oficial se contará a partir de las lecciones de palabras y textos.|Well done! The official record starts counting from the word and text lessons.",
-pBestDrill:"Millor PPM (exercicis)|Mejor PPM (ejercicios)|Best KPM (drills)",
 goalDone:"🏆 META ACONSEGUIDA! Ja ets mecanògrafa oficial.|🏆 ¡META CONSEGUIDA! Eres mecanógrafa oficial.|🏆 GOAL REACHED! You are an official typist.",
 stLessons:"Lliçons|Lecciones|Lessons", stStars:"Estrelles ⭐|Estrellas ⭐|Stars ⭐",
 stAcc:"Precisió mitjana|Precisión media|Average accuracy", stTime:"Temps practicat|Tiempo practicado|Time practised",
@@ -1654,17 +1651,9 @@ document.getElementById("tabs").addEventListener("click",e=>{
    ============================================================ */
 const REAL_MODES=new Set(["words","wordsLen","wordsAcc","sent","text","names"]);
 const countsForRecord=l=>!!l&&REAL_MODES.has(l.mode);
-/* Rècord oficial: només compta amb text real (la meta de 300 ppm ha de ser honesta) */
 function bestPpm(){
   let m=0;
   for(const id in S.prog) if(countsForRecord(LESSONS[Number(id)-1])) m=Math.max(m,S.prog[id].ppm||0);
-  return m;
-}
-/* Millor marca de qualsevol lliçó, inclosos els exercicis de tecles.
-   Serveix per no ensenyar mai un 0 a qui ja ha practicat. */
-function bestAnyPpm(){
-  let m=0;
-  for(const id in S.prog) m=Math.max(m,S.prog[id].ppm||0);
   return m;
 }
 const doneCount=()=>Object.values(S.prog).filter(p=>p.done).length;
@@ -1694,16 +1683,11 @@ function renderHome(){
   document.getElementById("heroTitle").textContent=fmt(t("heroHi"),{name:S.name});
   document.getElementById("heroText").innerHTML=t("heroText");
 
-  /* Si encara no hi ha cap lliçó de text real, ensenyem la marca dels exercicis
-     ben etiquetada, en comptes d'un 0 desmoralitzador. */
-  const bp=bestPpm(), drill=!bp&&bestAnyPpm()>0, shown=bp||bestAnyPpm();
-  document.getElementById("gaugeVal").textContent=shown;
-  document.querySelector(".gauge .lbl").textContent=drill?t("gaugeLblDrill"):t("gaugeLbl");
-  const pct=Math.min(1,shown/300), arc=document.getElementById("gaugeArc"), L=270;
-  arc.style.strokeDasharray=L; arc.style.strokeDashoffset=L-(L*pct);
-  arc.style.opacity=pct>0?(drill?.4:1):0;
-  document.getElementById("goalMsg").textContent=
-    drill?t("goalDrill"):(bp>=300?t("goalDone"):fmt(t("goalLeft"),{n:300-bp}));
+  const bp=bestPpm();
+  document.getElementById("gaugeVal").textContent=bp;
+  const pct=Math.min(1,bp/300), arc=document.getElementById("gaugeArc"), L=270;
+  arc.style.strokeDasharray=L; arc.style.strokeDashoffset=L-(L*pct); arc.style.opacity=pct>0?1:0;
+  document.getElementById("goalMsg").textContent=bp>=300?t("goalDone"):fmt(t("goalLeft"),{n:300-bp});
 
   document.getElementById("sLessons").textContent=doneCount()+"/"+LESSONS.length;
   document.getElementById("sStars").textContent=starCount();
@@ -2085,11 +2069,8 @@ function renderAch(){
    ============================================================ */
 function renderStats(){
   if(!S) return;
-  const bp=bestPpm(), drill=!bp&&bestAnyPpm()>0;
-  document.getElementById("p1").textContent=bp||bestAnyPpm();
-  document.getElementById("p1lbl").textContent=drill?t("pBestDrill"):t("pBest");
-  let last=S.hist.filter(h=>countsForRecord(LESSONS[h.id-1])).slice(-10);
-  if(!last.length) last=S.hist.slice(-10);
+  document.getElementById("p1").textContent=bestPpm();
+  const last=S.hist.filter(h=>countsForRecord(LESSONS[h.id-1])).slice(-10);
   document.getElementById("p2").textContent=last.length?Math.round(last.reduce((a,x)=>a+x.ppm,0)/last.length):0;
   document.getElementById("p3").textContent=S.hist.length;
   document.getElementById("p4").textContent=streak();

@@ -102,7 +102,7 @@ nav.tabs button.active{background:var(--primary);color:#fff;box-shadow:0 6px 14p
 .userchip:hover{border-color:var(--primary);box-shadow:var(--shadow)}
 .av{border-radius:99px;display:grid;place-items:center;overflow:hidden;background:linear-gradient(140deg,#ffd6a5,#ffb3e6);flex:none}
 .av img{width:100%;height:100%;object-fit:cover;display:block}
-.userchip .av{width:34px;height:34px;font-size:19px}
+.userchip .av{width:50px;height:50px;font-size:27px;box-shadow:0 0 0 2px var(--surface),0 0 0 4px color-mix(in srgb,var(--primary) 30%,transparent)}
 
 /* ---------- Perfils ---------- */
 .profgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px}
@@ -112,7 +112,8 @@ nav.tabs button.active{background:var(--primary);color:#fff;box-shadow:0 6px 14p
 }
 .profcard:hover{transform:translateY(-3px);border-color:var(--primary);box-shadow:var(--shadow-lg)}
 .profcard.active{border-color:var(--primary);background:color-mix(in srgb,var(--primary) 7%,var(--surface))}
-.profcard .av{width:82px;height:82px;font-size:44px;margin:0 auto 12px}
+.profcard .av{width:116px;height:116px;font-size:62px;margin:0 auto 14px;box-shadow:0 0 0 3px var(--surface),0 0 0 6px var(--line)}
+.profcard.active .av{box-shadow:0 0 0 3px var(--surface),0 0 0 6px color-mix(in srgb,var(--primary) 45%,transparent)}
 .profcard .pn{font-size:17px;font-weight:800;letter-spacing:-.01em}
 .profcard .pa{font-size:12px;color:var(--ink-3);font-weight:700;margin-top:2px}
 .profcard .pstats{display:flex;justify-content:center;gap:12px;margin-top:11px;font-size:11.5px;font-weight:750;color:var(--ink-2)}
@@ -131,7 +132,7 @@ nav.tabs button.active{background:var(--primary);color:#fff;box-shadow:0 6px 14p
   background:var(--surface-2);color:var(--ink);font-size:15.5px;font-weight:650;outline:none
 }
 .field input:focus{border-color:var(--primary);background:var(--surface)}
-.avpreview{width:96px;height:96px;font-size:52px;margin:0 auto 14px;border:3px solid var(--line)}
+.avpreview{width:132px;height:132px;font-size:72px;margin:0 auto 16px;border:4px solid var(--line)}
 .avgrid{display:grid;grid-template-columns:repeat(8,1fr);gap:6px}
 .avgrid button{aspect-ratio:1;border-radius:12px;font-size:22px;background:var(--surface-2);border:2px solid transparent;display:grid;place-items:center;transition:.12s}
 .avgrid button:hover{transform:scale(1.1)}
@@ -699,7 +700,7 @@ select.sel{padding:9px 13px;border-radius:11px;border:1px solid var(--line);back
       </div>
       <div class="setrow">
         <div style="display:flex;align-items:center;gap:14px">
-          <div class="av" id="setAv" style="width:52px;height:52px;font-size:28px"></div>
+          <div class="av" id="setAv" style="width:70px;height:70px;font-size:38px"></div>
           <div><div class="lbl" id="setProfName"></div><div class="dsc" id="setProfAge"></div></div>
         </div>
         <div class="ctl" style="display:flex;gap:8px">

@@ -1469,19 +1469,15 @@ function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor
 const allowed=u=>ALLOW[Math.min(u,10)];
 function fits(w,set){for(const c of w) if(!set.has(c)) return false; return true;}
 
-function pickWords(u,n,min,max){
+/* target = nombre de caràcters desitjat, no de paraules */
+function pickWords(u,target,min,max){
   const set=allowed(u);
   let pool=C().WORDS.filter(w=>w.length>=(min||1)&&w.length<=(max||99)&&fits(w,set));
   pool=[...new Set(pool)];
   if(pool.length<6) return null;
-  const out=[]; let bag=[];
-  while(out.length<n){
-    if(!bag.length) bag=shuffle(pool);
-    const w=bag.pop();
-    if(w===out[out.length-1]&&bag.length>1){ bag.unshift(w); continue; }
-    out.push(w);
-  }
-  return out.join(" ");
+  const next=bagPicker(pool);
+  let last="";
+  return untilTarget(()=>{ let w=next(); if(w===last) w=next(); last=w; return w; },target);
 }
 function drill(pool,focus,groups,minL,maxL){
   const chars=pool.split("");
@@ -1504,90 +1500,141 @@ function cumulativePool(idx){
   return [...new Set(p.split(""))].join("");
 }
 
+/* ------------------------------------------------------------------
+   Quant ha de durar un exercici?
+   Un test de mecanografia necessita com a mínim un minut per donar una
+   mesura fiable: per sota, una sola vacil·lació ja et canvia el resultat.
+   I per dalt, una criatura de vuit anys manté la postura i l'atenció uns
+   dos minuts llargs; més estona no ensenya més, només cansa.
+   Per això la llargada no és fixa: s'ajusta a la velocitat de cadascú
+   perquè totes les lliçons durin si fa no fa el mateix. Amb una llargada
+   fixa, les primeres lliçons se li fan eternes i les últimes duren
+   quaranta segons, massa poc per mesurar res.
+------------------------------------------------------------------ */
+const TARGET_SEC=105, MIN_CHARS=85, MAX_CHARS=340;
+function recentSpeed(){
+  const h=S.hist.slice(-5).map(x=>x.gross||x.ppm||0).filter(v=>v>0).sort((a,b)=>a-b);
+  if(!h.length) return 40;                       // principiant absolut
+  const med=h[Math.floor(h.length/2)];           // mediana: una sessió rara no desvia la llargada
+  return Math.max(25,Math.min(400,Math.round(med)));
+}
+function targetChars(l){
+  let n=Math.round(recentSpeed()*TARGET_SEC/60);
+  n=Math.max(MIN_CHARS,Math.min(MAX_CHARS,n));
+  if(l&&l.challenge) n=Math.max(n,220);          // un repte s'ha de mesurar bé
+  return n;
+}
+/* Va encadenant trossos fins a arribar a la llargada desitjada */
+function untilTarget(makeToken,target){
+  const out=[]; let len=0;
+  while(len<target&&out.length<500){
+    const tk=String(makeToken(out.length));
+    if(!tk) break;
+    out.push(tk); len+=tk.length+1;
+  }
+  return out.join(" ");
+}
+/* Reparteix una llista sense repetir fins que s'acaba, i llavors la remena */
+function bagPicker(list){
+  let bag=[];
+  return ()=>{ if(!bag.length) bag=shuffle(list); return bag.pop(); };
+}
+
 function buildText(l){
-  const u=l.u, D=C();
+  const u=l.u, D=C(), TG=targetChars(l);
   switch(l.mode){
-    case "keys":
-      return drill(l.pool||cumulativePool(l.id),l.k,l.len||26,3,4);
+    case "keys":{
+      const pool=(l.pool||cumulativePool(l.id)).split("");
+      return untilTarget(()=>{
+        const len=3+Math.floor(Math.random()*2);
+        let s="";
+        for(let i=0;i<len;i++) s+=(l.k&&l.k.length&&Math.random()<0.6)?rnd(l.k):rnd(pool);
+        return s;
+      },TG);
+    }
     case "words":
-      return pickWords(u,l.len||24,1,99)||drill(cumulativePool(l.id),[],24,3,4);
+      return pickWords(u,TG,1,99)||drill(cumulativePool(l.id),[],24,3,4);
     case "wordsLen":
-      return pickWords(u,26,l.min||1,l.max||99)||pickWords(u,26)||drill("asdfjklñ",[],24,3,4);
+      return pickWords(u,TG,l.min||1,l.max||99)||pickWords(u,TG)||drill("asdfjklñ",[],24,3,4);
     case "wordsAcc":{
       const acc=D.WORDS_ACC||[];
-      if(acc.length){
-        const a=shuffle(acc).slice(0,10);
-        const b=shuffle(D.WORDS.filter(w=>w.length>4)).slice(0,8);
-        return shuffle(a.concat(b)).join(" ");
-      }
-      return shuffle(D.WORDS.filter(w=>w.length>=6)).slice(0,20).join(" ");
+      const pool=acc.length?acc.concat(D.WORDS.filter(w=>w.length>4)):D.WORDS.filter(w=>w.length>=6);
+      const next=bagPicker([...new Set(pool)]);
+      return untilTarget(next,TG);
     }
-    case "bigrams":{
-      const out=[]; for(let i=0;i<30;i++) out.push(rnd(D.BIGRAMS)+rnd(D.BIGRAMS));
-      return out.join(" ");
-    }
+    case "bigrams":
+      return untilTarget(()=>rnd(D.BIGRAMS)+rnd(D.BIGRAMS),TG);
     case "sent":{
       const set=allowed(l.minU||u);
       let pool=D.SENTENCES.filter(s=>fits(s,set));
       if(pool.length<3) pool=D.SENTENCES.filter(s=>fits(s,allowed(4)));
       if(pool.length<3) pool=D.SENTENCES.filter(s=>fits(s,allowed(6)));
-      return shuffle(pool).slice(0,l.n||4).join(" ");
+      const next=bagPicker(pool);
+      return untilTarget(next,TG);
     }
-    case "text":
-      return D.TEXTS[l.ix%D.TEXTS.length].x;
-    case "upperL":{
-      const letters="QWERTASDFGZXCVB".split("");
-      const out=[];
-      for(let i=0;i<22;i++){ const L=rnd(letters); out.push(L+L.toLowerCase()+L+L.toLowerCase()); }
-      return out.join(" ");
+    case "text":{
+      let out=D.TEXTS[l.ix%D.TEXTS.length].x;
+      /* Als reptes encadenem paràgrafs fins a tenir mostra suficient:
+         un examen de 58 segons no certifica res. A la unitat 9 no, que allà
+         el que toca és llegir un text sencer, no fer una marató. */
+      if(l.challenge){
+        const need=Math.max(220,Math.round(l.challenge*110/60));
+        let i=1;
+        while(out.length<need&&i<D.TEXTS.length){
+          out+=" "+D.TEXTS[(l.ix+i)%D.TEXTS.length].x; i++;
+        }
+      }
+      return out;
     }
+    case "upperL":
+      return untilTarget(()=>{ const L=rnd("QWERTASDFGZXCVB".split("")); return L+L.toLowerCase()+L+L.toLowerCase(); },TG);
     case "upperR":{
       let letters="YUIOPHJKLNM";
       if(S.lang==="es") letters+="Ñ"; if(S.lang==="ca") letters+="Ç";
-      const a=letters.split(""), out=[];
-      for(let i=0;i<22;i++){ const L=rnd(a); out.push(L+L.toLowerCase()+L+L.toLowerCase()); }
-      return out.join(" ");
+      const a=letters.split("");
+      return untilTarget(()=>{ const L=rnd(a); return L+L.toLowerCase()+L+L.toLowerCase(); },TG);
     }
-    case "names":
-      return shuffle(D.NAMES).slice(0,14).join(" ");
+    case "names":{
+      const next=bagPicker(D.NAMES);
+      return untilTarget(next,TG);
+    }
     case "accents":{
       const s=ACC_SETS[S.lang][l.accIx];
-      if(!s){ // anglès: contraccions amb apòstrof
-        const c=D.CONTR||[];
-        const out=[]; let bag=[];
-        for(let i=0;i<22;i++){ if(!bag.length) bag=shuffle(c); out.push(bag.pop()); }
-        return out.join(" ");
+      if(!s){                                   // anglès: contraccions amb apòstrof
+        const next=bagPicker(D.CONTR||[]);
+        return untilTarget(next,TG);
       }
       const base={"á":"a","é":"e","í":"i","ó":"o","ú":"u","à":"a","è":"e","ò":"o","ï":"i","ü":"u"};
-      const chars=s.split(""), out=[];
-      for(let i=0;i<14;i++){ const c=rnd(chars); out.push(c+base[c]+c+base[c]); }
-      const w=shuffle((D.WORDS_ACC||[]).filter(x=>chars.some(c=>x.includes(c)))).slice(0,8);
-      return out.join(" ")+(w.length?" "+w.join(" "):"");
+      const chars=s.split("");
+      const words=(D.WORDS_ACC||[]).filter(x=>chars.some(c=>x.includes(c)));
+      const nextW=bagPicker(words.length?words:D.WORDS);
+      /* Primer dos terços de repeticions de la tecla, i després paraules
+         de veritat que la contenen: de la mecànica a l'ús real. */
+      return untilTarget(i=>{
+        if(i<Math.round(TG/9)) { const c=rnd(chars); return c+base[c]+c+base[c]; }
+        return nextW();
+      },TG);
     }
     case "punct":{
-      const set=l.set.split(""), out=[];
-      const ws=shuffle(C().WORDS.filter(w=>w.length>3&&w.length<8)).slice(0,26);
-      for(let i=0;i<20;i++){
-        const c=rnd(set), w=ws[i%ws.length];
-        if(c==="¿") out.push("¿"+w+"?");
-        else if(c==="¡") out.push("¡"+w+"!");
-        else if("?!".includes(c)) out.push(w+c);
-        else if(c==="("||c===")") out.push("("+w+")");
-        else if(c==='"') out.push('"'+w+'"');
-        else out.push(w+c);
-      }
-      return out.join(" ");
+      const set=l.set.split("");
+      const nextW=bagPicker(D.WORDS.filter(w=>w.length>3&&w.length<8));
+      return untilTarget(()=>{
+        const c=rnd(set), w=nextW();
+        if(c==="¿") return "¿"+w+"?";
+        if(c==="¡") return "¡"+w+"!";
+        if("?!".includes(c)) return w+c;
+        if(c==="("||c===")") return "("+w+")";
+        if(c==='"') return '"'+w+'"';
+        return w+c;
+      },TG);
     }
-    case "numbers":{
-      const out=[];
-      for(let i=0;i<18;i++){
+    case "numbers":
+      return untilTarget(()=>{
         const r=Math.random();
-        if(r<.33) out.push(Math.floor(Math.random()*28+1)+"-"+Math.floor(Math.random()*12+1)+"-20"+(10+Math.floor(Math.random()*16)));
-        else if(r<.66) out.push(Math.floor(Math.random()*900+100)+","+Math.floor(Math.random()*90+10));
-        else out.push(String(Math.floor(Math.random()*90000+1000)));
-      }
-      return out.join(" ");
-    }
+        if(r<.33) return Math.floor(Math.random()*28+1)+"-"+Math.floor(Math.random()*12+1)+"-20"+(10+Math.floor(Math.random()*16));
+        if(r<.66) return Math.floor(Math.random()*900+100)+","+Math.floor(Math.random()*90+10);
+        return String(Math.floor(Math.random()*90000+1000));
+      },TG);
   }
   return "asdf jklñ";
 }

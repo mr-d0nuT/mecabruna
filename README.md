@@ -69,6 +69,17 @@ per ràpid que hagis anat. Per sota del 80 % de precisió la lliçó s'ha de rep
 Això vol dir que anar de pressa i malament no puja la nota. És deliberat: la
 precisió és el que crea la memòria muscular, i la velocitat arriba sola després.
 
+## Quant dura cada exercici
+
+La llargada **no és fixa**: s'ajusta a la velocitat de cadascú perquè totes les
+lliçons durin al voltant d'**1 min 45 s**. Amb una llargada fixa passava que les
+primeres lliçons se li feien eternes (gairebé 4 minuts) i les últimes duraven 40
+segons, massa poc per mesurar res.
+
+El mínim són 85 caràcters i el màxim 340. Els reptes de la unitat 10 encadenen
+paràgrafs fins a tenir com a mínim un minut i mig de mostra: un examen de 58
+segons no certifica res.
+
 ## Notes
 
 - El teclat de la pantalla és sempre el **espanyol (ES)** en els tres idiomes, perquè és

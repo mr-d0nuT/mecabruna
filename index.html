@@ -350,7 +350,16 @@ h2.sec .sub{font-size:13px;font-weight:600;color:var(--ink-3);margin-left:auto}
 @keyframes pop{from{transform:scale(.88) translateY(14px);opacity:0}to{transform:none;opacity:1}}
 .modal h3{font-size:26px;letter-spacing:-.02em;margin-bottom:4px}
 .modal .sub{color:var(--ink-3);font-size:14px;margin-bottom:18px}
-.bigstars{font-size:44px;letter-spacing:6px;margin:6px 0 16px}
+.bigstars{font-size:38px;letter-spacing:3px;margin:4px 0 4px;white-space:nowrap}
+
+/* Marcador: velocitat i precisió per separat, i la nota final */
+.scoreboard{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:8px 0 12px}
+.scoreitem{background:var(--surface-2);border-radius:16px;padding:13px 8px}
+.si-lbl{font-size:11px;font-weight:850;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em}
+.si-stars{font-size:20px;letter-spacing:1px;margin:7px 0 4px;white-space:nowrap}
+.si-note{font-size:12px;font-weight:750;color:var(--ink-2)}
+.totalbox{border-top:2px dashed var(--line);padding-top:12px;margin-bottom:14px}
+.totalbox .t-lbl{font-size:11px;font-weight:850;color:var(--ink-3);letter-spacing:.14em}
 .bigstars span{display:inline-block;animation:starp .45s cubic-bezier(.2,1.5,.4,1) both}
 @keyframes starp{from{transform:scale(0) rotate(-40deg);opacity:0}to{transform:none;opacity:1}}
 .resgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:6px 0 18px}
@@ -852,13 +861,22 @@ nextKey:"Següent:|Siguiente:|Next:",
 unitGoal:"{u} · Meta {n} ppm|{u} · Meta {n} ppm|{u} · Goal {n} kpm",
 
 resExcellent:"🎉 Excel·lent!|🎉 ¡Excelente!|🎉 Excellent!",
+resGreat:"🌟 Genial!|🌟 ¡Genial!|🌟 Great!",
 resVeryGood:"👏 Molt bé!|👏 ¡Muy bien!|👏 Very good!",
-resDone:"🙂 Completada!|🙂 ¡Completada!|🙂 Completed!",
+resGood:"🙂 Bé!|🙂 ¡Bien!|🙂 Good!",
+resDone:"✅ Completada!|✅ ¡Completada!|✅ Completed!",
 resTry:"💪 Torna-ho a provar!|💪 ¡Sigue intentándolo!|💪 Keep trying!",
 msg0:"Gairebé! Repeteix la lliçó i veuràs com millores 💪|¡Casi! Repite la lección y verás cómo mejoras 💪|Almost! Repeat the lesson and you'll see how much you improve 💪",
-msg1:"Bé! Vas pel bon camí ⭐|¡Bien! Vas por buen camino ⭐|Good! You're on the right track ⭐",
-msg2:"Molt bé! Ja gairebé la domines ⭐⭐|¡Muy bien! Ya casi la dominas ⭐⭐|Very good! You've nearly mastered it ⭐⭐",
-msg3:"PERFECTE! Lliçó dominada 🎉|¡PERFECTO! Lección dominada 🎉|PERFECT! Lesson mastered 🎉",
+msg1:"Completada! Repeteix-la per guanyar més estrelles ⭐|¡Completada! Repítela para ganar más estrellas ⭐|Completed! Repeat it to earn more stars ⭐",
+msg2:"Bé! Ja li vas agafant el truc ⭐⭐|¡Bien! Ya le vas cogiendo el truco ⭐⭐|Good! You're getting the hang of it ⭐⭐",
+msg3:"Molt bé! Vas pel bon camí ⭐⭐⭐|¡Muy bien! Vas por buen camino ⭐⭐⭐|Very good! You're on the right track ⭐⭐⭐",
+msg4:"Genial! Gairebé perfecta 🌟|¡Genial! Casi perfecta 🌟|Great! Almost perfect 🌟",
+msg5:"PERFECTE! Lliçó dominada 🎉|¡PERFECTO! Lección dominada 🎉|PERFECT! Lesson mastered 🎉",
+scSpeed:"⚡ Velocitat|⚡ Velocidad|⚡ Speed",
+scAcc:"🎯 Encerts|🎯 Aciertos|🎯 Accuracy",
+scTotal:"NOTA FINAL|NOTA FINAL|FINAL SCORE",
+hintAcc:"💡 Ves més a poc a poc: amb menys errades pujaran les estrelles.|💡 Ve más despacio: con menos fallos subirán las estrellas.|💡 Slow down: fewer mistakes will earn you more stars.",
+hintSpeed:"💡 La precisió ja la tens! Ara, a poc a poc, una mica més de velocitat.|💡 ¡La precisión ya la tienes! Ahora, poco a poco, un poco más de velocidad.|💡 Your accuracy is there! Now, little by little, a bit more speed.",
 rTime:"Temps|Tiempo|Time", xpGained:"+{n} XP · {m}",
 newAch:"🏆 Nou premi: {a}|🏆 Nuevo logro: {a}|🏆 New award: {a}",
 finalPass:"🏁 HAS SUPERAT L'EXAMEN FINAL! Ves a Premis per veure el teu diploma.|🏁 ¡HAS SUPERADO EL EXAMEN FINAL! Ve a Logros para ver tu diploma.|🏁 YOU PASSED THE FINAL EXAM! Go to Awards to see your diploma.",
@@ -1350,6 +1368,24 @@ const LESSONS=[
 {u:10,t:"🏁 EXAMEN FINAL · 300 ppm|🏁 EXAMEN FINAL · 300 ppm|🏁 FINAL EXAM · 300 kpm",k:[],mode:"text",ix:3,goal:300,challenge:300,final:true}
 ];
 LESSONS.forEach((l,i)=>{l.id=i+1; l.num=LESSONS.filter(x=>x.u===l.u).indexOf(l)+1;});
+
+/* Metes de velocitat realistes per a qui comença de zero.
+   45 ppm ≈ 9 paraules/min (primera setmana) i 300 ppm ≈ 60 p/min (nivell adult).
+   Les unitats de majúscules, accents, números i signes baixen una mica:
+   aquestes tecles sempre s'escriuen més a poc a poc. */
+const GOALS={
+  1:[45,48,50,52,55,55,58,60],
+  2:[62,64,66,68,70,72,75,78],
+  3:[78,80,82,84,86,90,95,98],
+  4:[90,90,100,90,95,105,110],
+  5:[90,90,92,95,100,105],
+  6:[105,105,108,108,110],
+  7:[135,145,155,160,170],
+  8:[175,185,195,205,215],
+  9:[200,215,230,245,260],
+ 10:[150,200,240,270,300]
+};
+LESSONS.forEach(l=>{ const g=GOALS[l.u]; if(g&&g[l.num-1]) l.goal=g[l.num-1]; });
 
 /* ============================================================
    4. ESTAT
@@ -1845,7 +1881,7 @@ function renderHome(){
   document.getElementById("goalMsg").textContent=
     drill?t("goalDrill"):(bp>=300?t("goalDone"):fmt(t("goalLeft"),{n:300-bp}));
 
-  const dn=doneCount(), maxStars=LESSONS.length*3, st=starCount();
+  const dn=doneCount(), maxStars=LESSONS.length*MAX_STARS, st=starCount();
   document.getElementById("sLessons").textContent=dn+"/"+LESSONS.length;
   document.getElementById("sLessonsPct").textContent=Math.round(dn/LESSONS.length*100)+" %";
   document.getElementById("sLessonsBar").style.width=(dn/LESSONS.length*100)+"%";
@@ -1882,7 +1918,8 @@ document.getElementById("btnGoCourse").onclick=()=>{show("course");renderCourse(
 /* ============================================================
    10. CURS
    ============================================================ */
-const starStr=n=>"★★★".slice(0,n)+"☆☆☆".slice(0,3-n);
+const MAX_STARS=5;
+const starStr=n=>"★★★★★".slice(0,n)+"☆☆☆☆☆".slice(0,MAX_STARS-n);
 function lessonCard(l){
   const p=S.prog[l.id]||{}, un=isUnlocked(l), U=UNITS[l.u-1];
   const keys=(l.k||[]).filter(k=>k.length===1).map(k=>`<span class="keychip">${k===" "?"␣":k}</span>`).join("");
@@ -2108,16 +2145,20 @@ function finish(){
   stopPractice(); clearKb();
   const ppm=Math.round(P.ok/(sec/60)), acc=curAcc(), l=current;
 
-  let stars=0;
-  if(acc>=85) stars=1;
-  if(acc>=92&&ppm>=l.goal*0.72) stars=2;
-  if(acc>=96&&ppm>=l.goal) stars=3;
-  if(l.challenge&&ppm<l.challenge) stars=Math.min(stars,1);
+  /* Dues notes de 0 a 5 estrelles que es veuen per separat, i la final.
+     La precisió pesa gairebé el doble: és el que s'ha d'aprendre primer,
+     i la velocitat ja arriba sola després. */
+  const accStars=Math.max(0,Math.min(5,Math.round((acc-70)/30*5)));  // 70 % = 0 ★, 100 % = 5 ★
+  const spdStars=Math.max(0,Math.min(5,Math.round(ppm/l.goal*5)));   // arribar a la meta ja és 5 ★
+  const passed=acc>=75;                                              // per sota, cal repetir-la
+  let stars=Math.max(1,Math.min(5,Math.round(0.65*accStars+0.35*spdStars)));
+  if(!passed) stars=1;
+  if(l.challenge&&ppm<l.challenge) stars=Math.min(stars,3);
 
   const prev=S.prog[l.id]||{stars:0,ppm:0,acc:0,done:false}, wasDone=prev.done;
   const unitWasDone=unitDone(l.u);
-  const xpGain=Math.round(20+stars*18+(wasDone?0:25)+Math.min(45,Math.max(0,ppm-l.goal)*0.4));
-  S.prog[l.id]={stars:Math.max(prev.stars,stars),ppm:Math.max(prev.ppm,ppm),acc:Math.max(prev.acc,acc),done:prev.done||stars>=1};
+  const xpGain=Math.round(20+stars*12+(wasDone?0:25)+Math.min(45,Math.max(0,ppm-l.goal)*0.4));
+  S.prog[l.id]={stars:Math.max(prev.stars,stars),ppm:Math.max(prev.ppm,ppm),acc:Math.max(prev.acc,acc),done:prev.done||passed};
   const unitJustDone=!unitWasDone&&unitDone(l.u);
   S.xp+=xpGain;
   S.totalSec+=Math.round(sec);
@@ -2128,8 +2169,8 @@ function finish(){
   save();
   sBell();                                  // el timbre de final de línia
   setTimeout(()=>sWin(stars),260);
-  if(stars>=1) confetti(stars>=3?120:80);
-  showResult({l,ppm,acc,sec,stars,xpGain,newAch:checkAch(),err:P.err,unitJustDone});
+  if(passed) confetti(stars>=4?130:80);
+  showResult({l,ppm,acc,sec,stars,xpGain,newAch:checkAch(),err:P.err,unitJustDone,passed,accStars,spdStars});
 }
 
 /* ---------- Confeti ---------- */
@@ -2176,20 +2217,37 @@ function showTrophy(unit,after){
 
 function showResult(r){
   const l=r.l, next=LESSONS.find(x=>x.id===l.id+1);
-  const heads=[t("resTry"),t("resDone"),t("resVeryGood"),t("resExcellent")];
-  const msgs=[t("msg0"),t("msg1"),t("msg2"),t("msg3")];
+  const heads=[t("resTry"),t("resDone"),t("resGood"),t("resVeryGood"),t("resGreat"),t("resExcellent")];
+  const msgs=[t("msg0"),t("msg1"),t("msg2"),t("msg3"),t("msg4"),t("msg5")];
+  const head=r.passed?heads[r.stars]:heads[0];
+  const msg=r.passed?msgs[r.stars]:msgs[0];
+  /* Quin dels dos factors li frena més: així sap què entrenar */
+  /* Només li diem d'anar més a poc a poc si la precisió és realment el punt fluix */
+  const hint=r.stars>=5?"":(r.accStars<r.spdStars?t("hintAcc"):t("hintSpeed"));
+  const stH=(n,anim)=>[0,1,2,3,4].map(i=>
+    `<span style="${anim?`animation-delay:${i*.12}s;`:"animation:none;"}color:${i<n?"var(--gold)":"var(--line)"}">★</span>`).join("");
   const ov=document.createElement("div"); ov.className="overlay";
   ov.innerHTML=`<div class="modal">
-    <h3>${heads[r.stars]}</h3>
-    <div class="sub">${pick(l.t)}</div>
-    <div class="bigstars">${[0,1,2].map(i=>`<span style="animation-delay:${i*.14}s;color:${i<r.stars?"var(--gold)":"var(--line)"}">★</span>`).join("")}</div>
-    <div class="resgrid">
-      <div><b style="color:${r.ppm>=l.goal?"var(--ok)":"inherit"}">${r.ppm}</b><span>${t("mPpm")}</span></div>
-      <div><b style="color:${r.acc>=95?"var(--ok)":r.acc<85?"var(--bad)":"inherit"}">${r.acc}%</b><span>${t("mAcc")}</span></div>
-      <div><b>${r.sec<60?Math.round(r.sec)+"s":Math.floor(r.sec/60)+":"+String(Math.round(r.sec%60)).padStart(2,"0")}</b><span>${t("rTime")}</span></div>
-      <div><b>${r.err}</b><span>${t("mErr")}</span></div>
+    <h3>${head}</h3>
+    <div class="sub">${pick(l.t)} · ${r.sec<60?Math.round(r.sec)+"s":Math.floor(r.sec/60)+":"+String(Math.round(r.sec%60)).padStart(2,"0")}</div>
+    <div class="scoreboard">
+      <div class="scoreitem">
+        <div class="si-lbl">${t("scSpeed")}</div>
+        <div class="si-stars">${stH(r.spdStars,false)}</div>
+        <div class="si-note" style="color:${r.ppm>=l.goal?"var(--ok)":"var(--ink-2)"}">${r.ppm} / ${l.goal} ${t("mPpm").toLowerCase()}</div>
+      </div>
+      <div class="scoreitem">
+        <div class="si-lbl">${t("scAcc")}</div>
+        <div class="si-stars">${stH(r.accStars,false)}</div>
+        <div class="si-note" style="color:${r.acc>=95?"var(--ok)":r.acc<85?"var(--bad)":"var(--ink-2)"}">${r.acc}% · ${r.err} ${t("mErr").toLowerCase()}</div>
+      </div>
     </div>
-    <div class="xpline">${fmt(t("xpGained"),{n:r.xpGain,m:msgs[r.stars]})}</div>
+    <div class="totalbox">
+      <div class="t-lbl">${t("scTotal")}</div>
+      <div class="bigstars">${stH(r.stars,true)}</div>
+    </div>
+    <div class="xpline">${fmt(t("xpGained"),{n:r.xpGain,m:msg})}</div>
+    ${hint?`<div class="xpline" style="background:color-mix(in srgb,var(--primary) 9%,var(--surface));color:var(--ink-2)">${hint}</div>`:""}
     ${r.newAch.length?`<div class="xpline" style="background:#fef3c7;color:#92400e">${fmt(t("newAch"),{a:r.newAch.map(a=>pick(a.n)).join(", ")})}</div>`:""}
     ${l.final&&r.ppm>=300&&r.acc>=95?`<div class="xpline" style="background:#dcfce7;color:#166534">${t("finalPass")}</div>`:""}
     <div class="actions">
@@ -2220,9 +2278,9 @@ const ACHS=[
  {id:"u4",i:"🔠",n:"Majúscules i accents|Mayúsculas y tildes|Capitals and accents",d:"Acaba la Unitat 4|Termina la Unidad 4|Finish Unit 4",f:()=>unitDone(4)},
  {id:"u5",i:"🔢",n:"Calculadora humana|Calculadora humana|Human calculator",d:"Acaba la Unitat 5|Termina la Unidad 5|Finish Unit 5",f:()=>unitDone(5)},
  {id:"u6",i:"❗",n:"Reina dels signes|Reina de los signos|Queen of signs",d:"Acaba la Unitat 6|Termina la Unidad 6|Finish Unit 6",f:()=>unitDone(6)},
- {id:"s25",i:"⭐",n:"25 estrelles|25 estrellas|25 stars",d:"Aconsegueix 25 estrelles|Consigue 25 estrellas|Collect 25 stars",f:()=>starCount()>=25},
- {id:"s75",i:"🌟",n:"75 estrelles|75 estrellas|75 stars",d:"Aconsegueix 75 estrelles|Consigue 75 estrellas|Collect 75 stars",f:()=>starCount()>=75},
- {id:"s150",i:"✨",n:"150 estrelles|150 estrellas|150 stars",d:"Aconsegueix 150 estrelles|Consigue 150 estrellas|Collect 150 stars",f:()=>starCount()>=150},
+ {id:"s25",i:"⭐",n:"50 estrelles|50 estrellas|50 stars",d:"Aconsegueix 50 estrelles|Consigue 50 estrellas|Collect 50 stars",f:()=>starCount()>=50},
+ {id:"s75",i:"🌟",n:"150 estrelles|150 estrellas|150 stars",d:"Aconsegueix 150 estrelles|Consigue 150 estrellas|Collect 150 stars",f:()=>starCount()>=150},
+ {id:"s150",i:"✨",n:"250 estrelles|250 estrellas|250 stars",d:"Aconsegueix 250 estrelles|Consigue 250 estrellas|Collect 250 stars",f:()=>starCount()>=250},
  {id:"p100",i:"🚶",n:"100 ppm|100 ppm|100 kpm",d:"Arriba a 100 pulsacions per minut|Alcanza 100 pulsaciones por minuto|Reach 100 keystrokes per minute",f:()=>bestPpm()>=100},
  {id:"p150",i:"🏃",n:"150 ppm|150 ppm|150 kpm",d:"Arriba a 150 pulsacions per minut|Alcanza 150 pulsaciones por minuto|Reach 150 keystrokes per minute",f:()=>bestPpm()>=150},
  {id:"p200",i:"🚴",n:"200 ppm|200 ppm|200 kpm",d:"Arriba a 200 pulsacions per minut|Alcanza 200 pulsaciones por minuto|Reach 200 keystrokes per minute",f:()=>bestPpm()>=200},

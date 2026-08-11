@@ -46,6 +46,29 @@ Cada persona té el seu propi perfil amb el seu curs, el seu progrés i el seu i
 - Estrelles, XP, nivells, 22 premis, ratxa de dies i gràfic d'evolució.
 - Joc «Pluja de paraules» i diploma imprimible.
 
+## Com es puntua
+
+Cada lliçó dóna dues valoracions de 0 a 5 estrelles i una nota final.
+
+**Velocitat.** Es mesuren les *pulsacions netes per minut*. En mode estricte totes
+les errades s'han de corregir, i el temps perdut ja rebaixa la velocitat, així que
+no es penalitza dues vegades. Amb el mode estricte apagat les errades queden al
+text i s'apliquen les 5 pulsacions de penalització per errada de la norma clàssica
+(1 error = 1 paraula). Arribar a la meta de la lliçó ja són 5 ★.
+
+**Encerts.** Precisió = pulsacions correctes / pulsacions totals. Els punts
+d'ancoratge són els de les certificacions professionals: **95 % = 4 ★** (el mínim
+professional) i **98 % = 5 ★**. Per sota baixa de pressa, perquè els errors es
+disparen: al 95 % són 5 errades cada 100 pulsacions, al 90 % ja en són 10.
+
+**Nota final** = 60 % encerts + 40 % velocitat, amb un límit important: *la
+velocitat no pot pujar la nota més d'una estrella per sobre dels encerts*. És el
+que fan les certificacions de veritat, on un examen per sota del 95 % no és vàlid
+per ràpid que hagis anat. Per sota del 80 % de precisió la lliçó s'ha de repetir.
+
+Això vol dir que anar de pressa i malament no puja la nota. És deliberat: la
+precisió és el que crea la memòria muscular, i la velocitat arriba sola després.
+
 ## Notes
 
 - El teclat de la pantalla és sempre el **espanyol (ES)** en els tres idiomes, perquè és

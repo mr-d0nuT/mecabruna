@@ -358,6 +358,7 @@ h2.sec .sub{font-size:13px;font-weight:600;color:var(--ink-3);margin-left:auto}
 .si-lbl{font-size:11px;font-weight:850;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em}
 .si-stars{font-size:20px;letter-spacing:1px;margin:7px 0 4px;white-space:nowrap}
 .si-note{font-size:12px;font-weight:750;color:var(--ink-2)}
+.si-sub{font-size:10.5px;font-weight:700;color:var(--ink-3);margin-top:3px}
 .totalbox{border-top:2px dashed var(--line);padding-top:12px;margin-bottom:14px}
 .totalbox .t-lbl{font-size:11px;font-weight:850;color:var(--ink-3);letter-spacing:.14em}
 .bigstars span{display:inline-block;animation:starp .45s cubic-bezier(.2,1.5,.4,1) both}
@@ -875,8 +876,13 @@ msg5:"PERFECTE! Lliçó dominada 🎉|¡PERFECTO! Lección dominada 🎉|PERFECT
 scSpeed:"⚡ Velocitat|⚡ Velocidad|⚡ Speed",
 scAcc:"🎯 Encerts|🎯 Aciertos|🎯 Accuracy",
 scTotal:"NOTA FINAL|NOTA FINAL|FINAL SCORE",
-hintAcc:"💡 Ves més a poc a poc: amb menys errades pujaran les estrelles.|💡 Ve más despacio: con menos fallos subirán las estrellas.|💡 Slow down: fewer mistakes will earn you more stars.",
-hintSpeed:"💡 La precisió ja la tens! Ara, a poc a poc, una mica més de velocitat.|💡 ¡La precisión ya la tienes! Ahora, poco a poco, un poco más de velocidad.|💡 Your accuracy is there! Now, little by little, a bit more speed.",
+hintAccHard:"💡 Ves més a poc a poc. Amb {n} errades la nota no pot pujar: primer encertar, després córrer.|💡 Ve más despacio. Con {n} fallos la nota no puede subir: primero acertar, después correr.|💡 Slow down. With {n} mistakes the score can't go up: accuracy first, speed later.",
+hintAccNear:"💡 Molt a prop! Amb un 95 % de encerts (menys de {n} errades) ja series al nivell professional.|💡 ¡Muy cerca! Con un 95 % de aciertos (menos de {n} fallos) ya estarías en el nivel profesional.|💡 So close! At 95% accuracy (under {n} mistakes) you'd be at professional level.",
+hintSpeed:"💡 La precisió ja és de nivell professional. Ara, a poc a poc, una mica més de velocitat.|💡 La precisión ya es de nivel profesional. Ahora, poco a poco, un poco más de velocidad.|💡 Your accuracy is already at professional level. Now, little by little, a bit more speed.",
+gateNote:"🔒 La velocitat no pot pujar la nota més d'una estrella per sobre dels encerts.|🔒 La velocidad no puede subir la nota más de una estrella por encima de los aciertos.|🔒 Speed can't lift the score more than one star above accuracy.",
+grossNote:"{n} brutes|{n} brutas|{n} gross",
+proLevel:"✓ nivell professional|✓ nivel profesional|✓ professional level",
+proTarget:"llistó professional: {n} %|listón profesional: {n} %|professional bar: {n}%",
 rTime:"Temps|Tiempo|Time", xpGained:"+{n} XP · {m}",
 newAch:"🏆 Nou premi: {a}|🏆 Nuevo logro: {a}|🏆 New award: {a}",
 finalPass:"🏁 HAS SUPERAT L'EXAMEN FINAL! Ves a Premis per veure el teu diploma.|🏁 ¡HAS SUPERADO EL EXAMEN FINAL! Ve a Logros para ver tu diploma.|🏁 YOU PASSED THE FINAL EXAM! Go to Awards to see your diploma.",
@@ -2140,20 +2146,57 @@ function updateLiveNow(){
   document.getElementById("pracProg").style.width=(P.idx/P.text.length*100)+"%";
 }
 
+/* ------------------------------------------------------------------
+   Valoració de la precisió, 0–5 ★.
+   Els punts d'ancoratge són els que fan servir les certificacions:
+   95 % és el mínim professional (= 4 ★) i 98 % l'excel·lència (= 5 ★).
+   Per sota, cada tram val menys perquè els errors es disparen:
+   95 % són 5 errades cada 100 pulsacions; 90 % ja en són 10.
+------------------------------------------------------------------ */
+const ACC_ANCHORS=[[0,0],[80,0],[85,1],[90,2],[95,4],[98,5],[100,5]];
+function accRating(a){
+  for(let i=1;i<ACC_ANCHORS.length;i++){
+    if(a<=ACC_ANCHORS[i][0]){
+      const [x0,y0]=ACC_ANCHORS[i-1], [x1,y1]=ACC_ANCHORS[i];
+      return y0+(a-x0)/(x1-x0)*(y1-y0);
+    }
+  }
+  return 5;
+}
+
 function finish(){
   const sec=Math.max(1.5,elapsed());
   stopPractice(); clearKb();
-  const ppm=Math.round(P.ok/(sec/60)), acc=curAcc(), l=current;
+  const l=current, minutes=sec/60;
 
-  /* Dues notes de 0 a 5 estrelles que es veuen per separat, i la final.
-     La precisió pesa gairebé el doble: és el que s'ha d'aprendre primer,
-     i la velocitat ja arriba sola després. */
-  const accStars=Math.max(0,Math.min(5,Math.round((acc-70)/30*5)));  // 70 % = 0 ★, 100 % = 5 ★
-  const spdStars=Math.max(0,Math.min(5,Math.round(ppm/l.goal*5)));   // arribar a la meta ja és 5 ★
-  const passed=acc>=75;                                              // per sota, cal repetir-la
-  let stars=Math.max(1,Math.min(5,Math.round(0.65*accStars+0.35*spdStars)));
+  /* Pulsacions brutes: només les tecles encertades, com marca la norma. */
+  const gross=Math.round(P.ok/minutes);
+  /* Pulsacions netes: en mode estricte totes les errades s'han corregit,
+     i el temps perdut ja rebaixa les brutes, així que no es penalitza dues
+     vegades. Si el mode estricte està apagat, les errades queden al text i
+     s'apliquen les 5 pulsacions de penalització per errada (1 error = 1 paraula). */
+  const uncorrected=S.set.strict?0:P.err;
+  const net=Math.max(0,Math.round(gross-5*uncorrected/minutes));
+  const acc=curAcc();
+  const ppm=net;                       // el rècord oficial sempre és net
+
+  /* Dues valoracions contínues de 0 a 5 (no arrodonides fins al final,
+     perquè una millora petita ja es noti a la nota). */
+  const aR=accRating(acc);                       // precisió
+  const sR=Math.min(1,net/l.goal)*5;             // velocitat: arribar a la meta ja és el màxim
+
+  /* Nota final. La precisió pesa més perquè és el que s'ha d'aprendre
+     primer, i a més actua de sostre: la velocitat mai no et pot pujar
+     més d'una estrella per sobre de la teva precisió. Això és el que fan
+     les certificacions de veritat, on un examen per sota del 95 % no és
+     vàlid per ràpid que hagis anat. */
+  const raw=Math.min(0.6*aR+0.4*sR, aR+1);
+  const capped=raw<0.6*aR+0.4*sR;                // la precisió ha frenat la nota
+  const passed=acc>=80;                          // per sota, cal repetir la lliçó
+  let stars=Math.max(1,Math.min(5,Math.round(raw)));
   if(!passed) stars=1;
-  if(l.challenge&&ppm<l.challenge) stars=Math.min(stars,3);
+  if(l.challenge&&net<l.challenge) stars=Math.min(stars,3);
+  const accStars=Math.round(aR), spdStars=Math.round(sR);
 
   const prev=S.prog[l.id]||{stars:0,ppm:0,acc:0,done:false}, wasDone=prev.done;
   const unitWasDone=unitDone(l.u);
@@ -2162,7 +2205,7 @@ function finish(){
   const unitJustDone=!unitWasDone&&unitDone(l.u);
   S.xp+=xpGain;
   S.totalSec+=Math.round(sec);
-  S.hist.push({d:Date.now(),id:l.id,ppm,acc,sec:Math.round(sec)});
+  S.hist.push({d:Date.now(),id:l.id,ppm,gross,acc,sec:Math.round(sec)});
   if(S.hist.length>250) S.hist=S.hist.slice(-250);
   const today=new Date().toISOString().slice(0,10);
   if(!S.days.includes(today)) S.days.push(today);
@@ -2170,7 +2213,8 @@ function finish(){
   sBell();                                  // el timbre de final de línia
   setTimeout(()=>sWin(stars),260);
   if(passed) confetti(stars>=4?130:80);
-  showResult({l,ppm,acc,sec,stars,xpGain,newAch:checkAch(),err:P.err,unitJustDone,passed,accStars,spdStars});
+  showResult({l,ppm,gross,acc,sec,stars,xpGain,newAch:checkAch(),err:P.err,typed:P.typed,
+              unitJustDone,passed,accStars,spdStars,aR,sR,capped});
 }
 
 /* ---------- Confeti ---------- */
@@ -2222,8 +2266,14 @@ function showResult(r){
   const head=r.passed?heads[r.stars]:heads[0];
   const msg=r.passed?msgs[r.stars]:msgs[0];
   /* Quin dels dos factors li frena més: així sap què entrenar */
-  /* Només li diem d'anar més a poc a poc si la precisió és realment el punt fluix */
-  const hint=r.stars>=5?"":(r.accStars<r.spdStars?t("hintAcc"):t("hintSpeed"));
+  /* El consell es mesura contra el llistó professional (95 % de precisió),
+     no comparant una nota amb l'altra: amb un 88 % la precisió és el
+     problema encara que la velocitat vagi pitjor. */
+  let hint="";
+  if(!r.passed||r.acc<90) hint=fmt(t("hintAccHard"),{n:r.err});
+  else if(r.acc<95)       hint=fmt(t("hintAccNear"),{n:Math.max(1,Math.round(r.typed*0.05))});
+  else if(r.sR<5)         hint=t("hintSpeed");
+  const gateNote=r.capped&&r.passed?t("gateNote"):"";
   const stH=(n,anim)=>[0,1,2,3,4].map(i=>
     `<span style="${anim?`animation-delay:${i*.12}s;`:"animation:none;"}color:${i<n?"var(--gold)":"var(--line)"}">★</span>`).join("");
   const ov=document.createElement("div"); ov.className="overlay";
@@ -2235,11 +2285,13 @@ function showResult(r){
         <div class="si-lbl">${t("scSpeed")}</div>
         <div class="si-stars">${stH(r.spdStars,false)}</div>
         <div class="si-note" style="color:${r.ppm>=l.goal?"var(--ok)":"var(--ink-2)"}">${r.ppm} / ${l.goal} ${t("mPpm").toLowerCase()}</div>
+        <div class="si-sub">${Math.round(r.ppm/5)} WPM${r.gross!==r.ppm?" · "+fmt(t("grossNote"),{n:r.gross}):""}</div>
       </div>
       <div class="scoreitem">
         <div class="si-lbl">${t("scAcc")}</div>
         <div class="si-stars">${stH(r.accStars,false)}</div>
         <div class="si-note" style="color:${r.acc>=95?"var(--ok)":r.acc<85?"var(--bad)":"var(--ink-2)"}">${r.acc}% · ${r.err} ${t("mErr").toLowerCase()}</div>
+        <div class="si-sub">${r.acc>=95?t("proLevel"):fmt(t("proTarget"),{n:95})}</div>
       </div>
     </div>
     <div class="totalbox">
@@ -2247,6 +2299,7 @@ function showResult(r){
       <div class="bigstars">${stH(r.stars,true)}</div>
     </div>
     <div class="xpline">${fmt(t("xpGained"),{n:r.xpGain,m:msg})}</div>
+    ${gateNote?`<div class="xpline" style="background:var(--bad-soft);color:var(--bad)">${gateNote}</div>`:""}
     ${hint?`<div class="xpline" style="background:color-mix(in srgb,var(--primary) 9%,var(--surface));color:var(--ink-2)">${hint}</div>`:""}
     ${r.newAch.length?`<div class="xpline" style="background:#fef3c7;color:#92400e">${fmt(t("newAch"),{a:r.newAch.map(a=>pick(a.n)).join(", ")})}</div>`:""}
     ${l.final&&r.ppm>=300&&r.acc>=95?`<div class="xpline" style="background:#dcfce7;color:#166534">${t("finalPass")}</div>`:""}

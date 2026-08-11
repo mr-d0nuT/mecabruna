@@ -735,6 +735,15 @@ select.sel{padding:9px 13px;border-radius:11px;border:1px solid var(--line);back
         <div class="ctl"><div class="toggle" data-set="strict"></div></div>
       </div>
       <div class="setrow">
+        <div><div class="lbl" data-i18n="setExLen"></div><div class="dsc" id="setExLenD"></div></div>
+        <div class="ctl"><select class="sel" id="setExLen">
+          <option value="auto" data-i18n="exAuto"></option>
+          <option value="short" data-i18n="exShort"></option>
+          <option value="normal" data-i18n="exNormal"></option>
+          <option value="long" data-i18n="exLong"></option>
+        </select></div>
+      </div>
+      <div class="setrow">
         <div><div class="lbl" data-i18n="setSize"></div><div class="dsc" data-i18n="setSizeD"></div></div>
         <div class="ctl"><select class="sel" id="setSize">
           <option value="sz-s" data-i18n="sizeS"></option><option value="" data-i18n="sizeM"></option><option value="sz-l" data-i18n="sizeL"></option>
@@ -928,6 +937,12 @@ setHandsD:"Indica amb quin dit prémer|Indica con qué dedo pulsar|Shows which f
 setSound:"Sons|Sonidos|Sounds", setSoundD:"Clic en escriure i avís en fallar|Clic al escribir y aviso al fallar|A click when you type and a beep when you miss",
 setStrict:"Mode estricte|Modo estricto|Strict mode",
 setStrictD:"Si t'equivoques, cal prémer la tecla correcta per continuar. <b>Recomanat</b> per aprendre bé.|Si te equivocas, hay que pulsar la tecla correcta para seguir. <b>Recomendado</b> para aprender bien.|If you make a mistake you must press the correct key to continue. <b>Recommended</b> for learning properly.",
+setExLen:"Llargada dels exercicis|Longitud de los ejercicios|Exercise length",
+setExLenD:"Ara: unes {n} línies · {m} d'escriptura seguida|Ahora: unas {n} líneas · {m} de escritura seguida|Now: about {n} lines · {m} of continuous typing",
+exAuto:"Segons l'edat (recomanat)|Según la edad (recomendado)|By age (recommended)",
+exShort:"Curts · 2:30|Cortos · 2:30|Short · 2:30",
+exNormal:"Normals · 4:00|Normales · 4:00|Normal · 4:00",
+exLong:"Llargs · 6:00, pàgina sencera|Largos · 6:00, página entera|Long · 6:00, full page",
 setSize:"Mida de la lletra|Tamaño de letra|Text size", setSizeD:"Als exercicis|En los ejercicios|In the exercises",
 sizeS:"Petita|Pequeña|Small", sizeM:"Normal|Normal|Normal", sizeL:"Gran|Grande|Large",
 setDark:"Tema fosc|Tema oscuro|Dark theme", setDarkD:"Per practicar de nit|Para practicar de noche|For practising at night",
@@ -1403,7 +1418,7 @@ const defaultLang=()=>"ca";
 const DEF={
   name:"", age:null, avatar:"🦄", xp:0, lang:"ca",
   prog:{}, hist:[], keyErr:{}, ach:{}, days:[], gameBest:0, totalSec:0,
-  set:{showKb:true,showHands:true,sound:true,strict:true,dark:false,unlockAll:false,size:""}
+  set:{showKb:true,showHands:true,sound:true,strict:true,dark:false,unlockAll:false,size:"",exLen:"auto"}
 };
 const uid=()=>"u"+Date.now().toString(36)+Math.random().toString(36).slice(2,7);
 function newProfile(name,age,avatar){
@@ -1511,17 +1526,38 @@ function cumulativePool(idx){
    fixa, les primeres lliçons se li fan eternes i les últimes duren
    quaranta segons, massa poc per mesurar res.
 ------------------------------------------------------------------ */
-const TARGET_SEC=105, MIN_CHARS=85, MAX_CHARS=340;
+/* Els exercicis es mesuren en TEMPS, no en caràcters: així duren el mateix
+   tant si escrius a 40 pulsacions com si vas a 250, i cadascú fa el mateix
+   esforç. Amb una llargada fixa de caràcters passava el contrari. */
+const EX_LEN={
+  short: {sec:150},   // 2:30 · per als més petits o els dies de poca paciència
+  normal:{sec:240},   // 4:00 · per defecte a partir dels vuit anys
+  long:  {sec:360}    // 6:00 · exercici de pàgina sencera, com als manuals de tota la vida
+};
+const CHAR_FLOOR=90, CHAR_CEIL=1200;
+/* Per defecte, segons l'edat del perfil */
+function defaultExLen(age){
+  if(!age) return "normal";
+  if(age<=7)  return "short";
+  if(age<=12) return "normal";
+  return "long";
+}
 function recentSpeed(){
   const h=S.hist.slice(-5).map(x=>x.gross||x.ppm||0).filter(v=>v>0).sort((a,b)=>a-b);
   if(!h.length) return 40;                       // principiant absolut
   const med=h[Math.floor(h.length/2)];           // mediana: una sessió rara no desvia la llargada
   return Math.max(25,Math.min(400,Math.round(med)));
 }
+function exLenKey(){
+  const s=(S&&S.set.exLen)||"auto";
+  return (s==="auto"||!EX_LEN[s])?defaultExLen(S&&S.age):s;
+}
+function targetSeconds(){ return EX_LEN[exLenKey()].sec; }
 function targetChars(l){
-  let n=Math.round(recentSpeed()*TARGET_SEC/60);
-  n=Math.max(MIN_CHARS,Math.min(MAX_CHARS,n));
-  if(l&&l.challenge) n=Math.max(n,220);          // un repte s'ha de mesurar bé
+  let n=Math.round(recentSpeed()*targetSeconds()/60);
+  n=Math.max(CHAR_FLOOR,Math.min(CHAR_CEIL,n));
+  /* Un repte necessita com a mínim minut i mig a la velocitat que exigeix */
+  if(l&&l.challenge) n=Math.max(n,Math.round(l.challenge*90/60));
   return n;
 }
 /* Va encadenant trossos fins a arribar a la llargada desitjada */
@@ -2830,6 +2866,11 @@ function renderSettings(){
   if(!S) return;
   document.getElementById("setSize").value=S.set.size||"";
   document.getElementById("setLangSel").value=S.lang;
+  document.getElementById("setExLen").value=S.set.exLen||"auto";
+  const ch=targetChars(null), secs=Math.round(ch/recentSpeed()*60);
+  document.getElementById("setExLenD").textContent=fmt(t("setExLenD"),{
+    n:Math.max(1,Math.round(ch/40)),      // ~40 caràcters per línia a la mida normal
+    m:Math.floor(secs/60)+":"+String(secs%60).padStart(2,"0")});
   setAvatar(document.getElementById("setAv"),S.avatar);
   document.getElementById("setProfName").textContent=S.name;
   document.getElementById("setProfAge").textContent=S.age?fmt(t("ageYears"),{n:S.age}):"—";
@@ -2844,6 +2885,7 @@ function renderSettings(){
   });
 }
 document.getElementById("setSize").addEventListener("change",e=>{S.set.size=e.target.value;save();});
+document.getElementById("setExLen").addEventListener("change",e=>{S.set.exLen=e.target.value;save();renderSettings();});
 document.getElementById("setLangSel").addEventListener("change",e=>setLang(e.target.value));
 document.getElementById("btnEditProfile").onclick=()=>editProfileFlow(S);
 document.getElementById("btnSwitchProfile").onclick=()=>{show("profiles");renderProfiles();};

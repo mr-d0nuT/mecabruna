@@ -71,14 +71,26 @@ precisió és el que crea la memòria muscular, i la velocitat arriba sola despr
 
 ## Quant dura cada exercici
 
-La llargada **no és fixa**: s'ajusta a la velocitat de cadascú perquè totes les
-lliçons durin al voltant d'**1 min 45 s**. Amb una llargada fixa passava que les
-primeres lliçons se li feien eternes (gairebé 4 minuts) i les últimes duraven 40
-segons, massa poc per mesurar res.
+Els exercicis es mesuren en **temps, no en caràcters**: així duren el mateix tant
+si escrius a 40 pulsacions com si vas a 250, i cadascú fa el mateix esforç. Amb
+una llargada fixa passava el contrari — les primeres lliçons se li feien eternes
+i les últimes duraven quaranta segons, massa poc per mesurar res.
 
-El mínim són 85 caràcters i el màxim 340. Els reptes de la unitat 10 encadenen
-paràgrafs fins a tenir com a mínim un minut i mig de mostra: un examen de 58
-segons no certifica res.
+Per defecte va **segons l'edat del perfil**:
+
+| Edat | Durada | A 44 ppm | A 110 ppm | A 250 ppm |
+|---|---|---|---|---|
+| fins a 7 | 2:30 | 2 línies | 6 línies | 14 línies |
+| 8 a 12 | 4:00 | 4 línies | 10 línies | 22 línies |
+| 13 o més | 6:00 | 6 línies | 14 línies | 26 línies |
+
+Es pot forçar a mà des d'**Ajustos → Llargada dels exercicis**, on també es veu
+quantes línies i quants minuts surten ara mateix. L'opció «Llargs» és l'exercici
+de pàgina sencera dels manuals de tota la vida.
+
+Els reptes de la unitat 10 encadenen paràgrafs fins a tenir com a mínim un minut
+i mig de mostra a la velocitat que exigeixen: un examen de 58 segons no
+certifica res.
 
 ## Notes
 

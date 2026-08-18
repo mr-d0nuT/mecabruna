@@ -1,14 +1,21 @@
 # MecaBruna — Curs complet de mecanografia
 
+### 👉 [**Obre el curs: mr-d0nut.github.io/mecabruna**](https://mr-d0nut.github.io/mecabruna/)
+
 Curs de mecanografia al tacte **en català, castellà i anglès**, de zero fins a
 **300 pulsacions per minut**. Un sol fitxer HTML, sense instal·lació i sense internet.
 
 ## Com fer-lo servir
 
-Doble clic a `index.html` (s'obre al navegador). Res més.
+Amb l'enllaç de dalt s'obre directament al navegador, també al mòbil i a la tauleta.
+També pots descarregar `index.html` i fer-hi doble clic: funciona igual sense connexió.
 
 El primer cop demana crear un perfil: nom, edat i avatar. La interfície arrenca en
 **català**; es canvia amb les banderes (a la mateixa pantalla de benvinguda o a dalt a la dreta).
+
+> El progrés es desa al navegador de cada aparell, i **la versió web i la que
+> descarreguis no el comparteixen**. Val més triar-ne una i fer-la servir sempre.
+> Per canviar d'aparell hi ha **Ajustos → Exportar / Importar**.
 
 ## Multiusuari
 
@@ -17,8 +24,9 @@ Cada persona té el seu propi perfil amb el seu curs, el seu progrés i el seu i
 - Es canvia d'usuari clicant el nom a dalt a la dreta (⇄).
 - L'avatar pot ser un emoji **o una foto**: «Fer una foto» fa servir la càmera, i
   «Triar imatge» agafa una foto del disc (al mòbil obre directament la càmera).
-  Alguns navegadors bloquegen la càmera en fitxers oberts des del disc; en aquest cas
-  el botó «Triar imatge» sempre funciona.
+  La càmera només funciona a la [versió web](https://mr-d0nut.github.io/mecabruna/):
+  els navegadors la bloquegen quan el fitxer s'obre des del disc. Si fas servir el
+  fitxer descarregat, el botó «Triar imatge» sempre funciona.
 - L'edat s'utilitza per recomanar quants minuts diaris de pràctica són raonables i
   surt al diploma final.
 

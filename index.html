@@ -238,6 +238,9 @@ h2.sec .sub{font-size:13px;font-weight:600;color:var(--ink-3);margin-left:auto}
 .lesson .stars{font-size:13px;letter-spacing:1px}
 .lesson .badge-num{font-size:10.5px;font-weight:800;color:var(--ink-3);letter-spacing:.06em}
 .lesson.done{background:linear-gradient(180deg,var(--ok-soft),var(--surface-2));border-color:#86efac55}
+.lesson.review{background:linear-gradient(180deg,#fef3c7,var(--surface-2));border-color:var(--gold)}
+html[data-theme="dark"] .lesson.review{background:linear-gradient(180deg,#3b2f0d,var(--surface-2))}
+.lesson.review .badge-num{color:#b45309}
 .keychips{display:flex;gap:4px;flex-wrap:wrap;margin-top:2px}
 .keychip{font-family:var(--mono);font-size:11px;font-weight:700;padding:2px 6px;border-radius:6px;background:var(--surface);border:1px solid var(--line)}
 
@@ -848,6 +851,7 @@ unitDone:"Unitat superada!|¡Unidad superada!|Unit completed!",
 unitDoneSub:"Ja domines aquesta part del teclat 🎉|Ya dominas esta parte del teclado 🎉|You've mastered this part of the keyboard 🎉",
 keepGoing:"Continuar|Continuar|Keep going",
 continueHere:"🚀 Continua per aquí|🚀 Continúa por aquí|🚀 Carry on here",
+reviewTag:"REPÀS RECOMANAT|REPASO RECOMENDADO|WORTH REVISITING",
 tipsTitle:"💡 Consells d'or|💡 Consejos de oro|💡 Golden rules",
 tip1:"<b>Els dits a la fila guia.</b> Els índexs sobre la <b>F</b> i la <b>J</b> (tenen una ratlleta per trobar-les sense mirar). Els polzes descansen a la barra d'espai.|<b>Los dedos en la fila guía.</b> Índices sobre <b>F</b> y <b>J</b> (tienen una rayita para encontrarlas sin mirar). Los pulgares descansan en la barra espaciadora.|<b>Fingers on the home row.</b> Index fingers on <b>F</b> and <b>J</b> (they have a little ridge so you can find them without looking). Thumbs rest on the space bar.",
 tip2:"<b>No miris el teclat.</b> Mira només la pantalla. Al principi aniràs lenta: és normal i és el correcte.|<b>No mires el teclado.</b> Mira solo la pantalla. Al principio irás lenta: es normal y es lo correcto.|<b>Don't look at the keyboard.</b> Look only at the screen. You will be slow at first: that is normal and exactly right.",
@@ -959,7 +963,8 @@ confirmReset:"Segur que vols esborrar TOT el progrés de {n}? No es pot desfer.|
 imported:"Progrés importat!|¡Progreso importado!|Progress imported!",
 invalidFile:"El fitxer no és vàlid.|El archivo no es válido.|That file is not valid.",
 
-dKeys:"Escriu els grups de lletres sense mirar el teclat. Torna sempre a la fila guia després de cada tecla.|Escribe los grupos de letras sin mirar el teclado. Vuelve siempre a la fila guía después de cada tecla.|Type the groups of letters without looking at the keyboard. Always return to the home row after each key.",
+dKeys:"Comença amb les escales, sempre en el mateix ordre, i després venen grups a l'atzar. Torna a la fila guia després de cada tecla.|Empieza con las escalas, siempre en el mismo orden, y después vienen grupos al azar. Vuelve a la fila guía después de cada tecla.|Start with the scales, always in the same order, then random groups follow. Return to the home row after each key.",
+dRows:"Escales, com a les acadèmies de tota la vida: la fila sencera en ordre, del dit petit a l'índex i tornant enrere. No cal llegir-la, així que pots pensar només en els dits.|Escalas, como en las academias de toda la vida: la fila entera en orden, del meñique al índice y volviendo atrás. No hace falta leerla, así que puedes pensar solo en los dedos.|Scales, just like the old typing schools: the whole row in order, little finger to index and back again. There is nothing to read, so you can think only about your fingers.",
 dWords:"Ara paraules de veritat. Fixa't en la paraula sencera, no en cada lletra.|Ahora palabras de verdad. Fíjate en la palabra entera, no en cada letra.|Now real words. Look at the whole word, not at each letter.",
 dWordsLen:"Paraules triades per la seva llargada. Mantén un ritme constant.|Palabras seleccionadas por su longitud. Mantén un ritmo constante.|Words chosen by length. Keep a steady rhythm.",
 dWordsAcc:"Paraules amb accent. Recorda: primer la tecla de l'accent i després la vocal.|Palabras con tilde. Recuerda: primero la tecla ´ y después la vocal.|Longer, trickier words. Keep the rhythm steady.",
@@ -1320,17 +1325,17 @@ const LESSONS=[
 {u:1,t:"D i K|D y K|D and K",k:["d","k"],mode:"keys",goal:75},
 {u:1,t:"S i L|S y L|S and L",k:["s","l"],mode:"keys",goal:80},
 {u:1,t:"A i Ñ|A y Ñ|A and Ñ · the little finger's home",k:["a","ñ"],mode:"keys",goal:85},
-{u:1,t:"Repàs de la fila guia|Repaso de la fila guía|Home row review",k:[],mode:"keys",goal:90,pool:"asdfjklñ"},
+{u:1,t:"Escales: ASDF · ÑLKJ|Escalas: ASDF · ÑLKJ|Scales: ASDF · ÑLKJ",k:[],mode:"rows",goal:90,pool:"asdfjklñ"},
 {u:1,t:"G i H · un estirament de l'índex|G y H · un estirón del índice|G and H · an index-finger stretch",k:["g","h"],mode:"keys",goal:85},
 {u:1,t:"Primeres paraules|Primeras palabras|First words",k:[],mode:"words",goal:90},
-{u:1,t:"Repte de la fila guia|Reto de la fila guía|Home row challenge",k:[],mode:"keys",goal:100,pool:"asdfghjklñ",len:34},
+{u:1,t:"Escales completes: ASDFG · ÑLKJH|Escalas completas: ASDFG · ÑLKJH|Full scales: ASDFG · ÑLKJH",k:[],mode:"rows",goal:100,pool:"asdfghjklñ"},
 /* U2 */
 {u:2,t:"E i I|E e I|E and I",k:["e","i"],mode:"keys",goal:95},
 {u:2,t:"R i U|R y U|R and U",k:["r","u"],mode:"keys",goal:95},
 {u:2,t:"T i Y|T e Y|T and Y",k:["t","y"],mode:"keys",goal:100},
 {u:2,t:"O i W|O y W|O and W",k:["o","w"],mode:"keys",goal:100},
 {u:2,t:"P i Q|P y Q|P and Q",k:["p","q"],mode:"keys",goal:105},
-{u:2,t:"Repàs de la fila de dalt|Repaso de la fila de arriba|Top row review",k:[],mode:"keys",goal:110,pool:"qwertyuiop"},
+{u:2,t:"Escales: QWERT · POIUY|Escalas: QWERT · POIUY|Scales: QWERT · POIUY",k:[],mode:"rows",goal:110,pool:"qwertyuiop"},
 {u:2,t:"Paraules amb dues files|Palabras con dos filas|Two-row words",k:[],mode:"words",goal:115},
 {u:2,t:"Frases senzilles|Frases sencillas|Simple sentences",k:[],mode:"sent",goal:115},
 /* U3 */
@@ -1339,7 +1344,7 @@ const LESSONS=[
 {u:3,t:"X i la coma|X y la coma|X and the comma",k:["x",","],mode:"keys",goal:112},
 {u:3,t:"Z i el punt|Z y el punto|Z and the full stop",k:["z","."],mode:"keys",goal:115},
 {u:3,t:"B i el guionet|B y el guion|B and the hyphen",k:["b","-"],mode:"keys",goal:118},
-{u:3,t:"Alfabet complet!|¡Alfabeto completo!|The whole alphabet!",k:[],mode:"keys",goal:125,pool:"abcdefghijklmnñopqrstuvwxyz",len:34},
+{u:3,t:"Escales: ZXCVB · NM,.|Escalas: ZXCVB · NM,.|Scales: ZXCVB · NM,.",k:[],mode:"rows",goal:120,pool:"zxcvbnm,.-"},
 {u:3,t:"Paraules de tota mena|Palabras de todo tipo|All kinds of words",k:[],mode:"words",goal:130},
 {u:3,t:"Frases amb totes les lletres|Frases con todas las letras|Sentences with every letter",k:[],mode:"sent",goal:130},
 /* U4 */
@@ -1355,7 +1360,7 @@ const LESSONS=[
 {u:5,t:"3 i 8 · els dits del mig|3 y 8 · los corazones|3 and 8 · the middle fingers",k:["3","8"],mode:"keys",goal:120,pool:"345678"},
 {u:5,t:"2 i 9 · els anulars|2 y 9 · los anulares|2 and 9 · the ring fingers",k:["2","9"],mode:"keys",goal:122,pool:"23456789"},
 {u:5,t:"1 i 0 · els dits petits|1 y 0 · los meñiques|1 and 0 · the little fingers",k:["1","0"],mode:"keys",goal:125,pool:"0123456789"},
-{u:5,t:"Repàs de números|Repaso de números|Number review",k:[],mode:"keys",goal:130,pool:"0123456789"},
+{u:5,t:"Escales: 12345 · 09876|Escalas: 12345 · 09876|Scales: 12345 · 09876",k:[],mode:"rows",goal:130,pool:"0123456789"},
 {u:5,t:"Dates i quantitats|Fechas y cantidades|Dates and amounts",k:[],mode:"numbers",goal:135},
 /* U6 */
 {u:6,t:"El punt i la coma|El punto y la coma|The full stop and the comma",k:[".",","],mode:"punct",set:".,",goal:135},
@@ -1484,12 +1489,19 @@ function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor
 const allowed=u=>ALLOW[Math.min(u,10)];
 function fits(w,set){for(const c of w) if(!set.has(c)) return false; return true;}
 
-/* target = nombre de caràcters desitjat, no de paraules */
-function pickWords(u,target,min,max){
+/* target = nombre de caràcters desitjat, no de paraules.
+   focus = tecles que la lliçó vol reforçar: les paraules que en contenen
+   surten més sovint, perquè practicar-les dins de paraules de veritat és
+   el que fa que la tecla acabi sortint sola. */
+function pickWords(u,target,min,max,focus){
   const set=allowed(u);
   let pool=C().WORDS.filter(w=>w.length>=(min||1)&&w.length<=(max||99)&&fits(w,set));
   pool=[...new Set(pool)];
   if(pool.length<6) return null;
+  if(focus&&focus.length){
+    const hit=pool.filter(w=>focus.some(k=>w.includes(k)));
+    if(hit.length>=4) pool=pool.concat(hit,hit);      // pesen el triple
+  }
   const next=bagPicker(pool);
   let last="";
   return untilTarget(()=>{ let w=next(); if(w===last) w=next(); last=w; return w; },target);
@@ -1508,6 +1520,58 @@ function drill(pool,focus,groups,minL,maxL){
   }
   return out.join(" ");
 }
+/* ------------------------------------------------------------------
+   Escales: la seqüència ordenada de cada fila, del dit petit a l'índex,
+   tal com s'ensenyava a les acadèmies (ASDFG… ÑLKJH…).
+   No cal llegir-la, i això deixa tota l'atenció per als dits; a més
+   garanteix que cada dit treballa exactament igual, cosa que l'atzar no.
+------------------------------------------------------------------ */
+const ROW_RUNS=[
+  {L:"asdfg", R:"ñlkjh"},    // fila guia
+  {L:"qwert", R:"poiuy"},    // fila de dalt
+  {L:"zxcvb", R:"-.,mn"},    // fila de baix
+  {L:"12345", R:"09876"}     // números
+];
+function runsFor(poolStr,focus){
+  const has=new Set(poolStr.split("")), out=[];
+  for(const row of ROW_RUNS){
+    for(const side of ["L","R"]){
+      const seq=[...row[side]].filter(c=>has.has(c)).join("");
+      if(seq.length>=3) out.push(seq);
+    }
+  }
+  /* Primer les escales que contenen les tecles noves de la lliçó */
+  if(focus&&focus.length){
+    out.sort((a,b)=>(focus.some(k=>b.includes(k))?1:0)-(focus.some(k=>a.includes(k))?1:0));
+  }
+  return out;
+}
+/* La tecla de repòs de cada dit a la fila guia */
+const HOME_KEY={L5:"a",L4:"s",L3:"d",L2:"f",R2:"j",R3:"k",R4:"l",R5:"ñ"};
+/* Combinacions de files: anar de la fila guia a la tecla nova i tornar.
+   Els manuals ho tracten com un exercici a part perquè és exactament on
+   es concentren les errades: en el viatge del dit, no en la tecla. */
+function transitionTokens(keys){
+  const out=[];
+  (keys||[]).forEach(k=>{
+    if(!k||k.length!==1) return;
+    const h=HOME_KEY[fingerOf(k)];
+    if(!h||h===k) return;
+    out.push(h+k+h, k+h+k, h+k+h+k);
+  });
+  return out;
+}
+
+/* Escala repetida endavant i enrere, que és com s'entrena el moviment */
+function scaleTokens(runs,reps){
+  const out=[];
+  runs.forEach(s=>{
+    for(let i=0;i<(reps||3);i++) out.push(s);
+    out.push([...s].reverse().join(""));
+  });
+  return out;
+}
+
 function cumulativePool(idx){
   let p="";
   for(const l of LESSONS){ if(l.id>idx) break; if(l.mode==="keys"&&l.k.length) p+=l.k.join(""); }
@@ -1570,6 +1634,16 @@ function untilTarget(makeToken,target){
   }
   return out.join(" ");
 }
+/* Les tecles que més falla, per reforçar-les dins dels exercicis.
+   Només les que ja s'han ensenyat en aquesta lliçó, és clar. */
+function weakKeys(poolStr,n){
+  const has=new Set(poolStr.split(""));
+  return Object.entries(S.keyErr||{})
+    .filter(([k,v])=>has.has(k)&&v>=3)
+    .sort((a,b)=>b[1]-a[1])
+    .slice(0,n||3).map(([k])=>k);
+}
+
 /* Reparteix una llista sense repetir fins que s'acaba, i llavors la remena */
 function bagPicker(list){
   let bag=[];
@@ -1579,19 +1653,50 @@ function bagPicker(list){
 function buildText(l){
   const u=l.u, D=C(), TG=targetChars(l);
   switch(l.mode){
+    /* Escales pures: la lliçó sencera és la seqüència ordenada */
+    case "rows":{
+      const runs=runsFor(l.pool||cumulativePool(l.id),l.k);
+      if(!runs.length) return untilTarget(()=>rnd((l.pool||"asdf").split("")),TG);
+      const tk=scaleTokens(runs,4);
+      let i=0;
+      return untilTarget(()=>tk[i++%tk.length],TG);
+    }
     case "keys":{
-      const pool=(l.pool||cumulativePool(l.id)).split("");
-      return untilTarget(()=>{
+      const poolStr=l.pool||cumulativePool(l.id);
+      const pool=poolStr.split("");
+      const weak=weakKeys(poolStr,3);
+      const random=()=>{
+        let src;
+        /* Una part dels grups es fan amb les tecles que més li costen:
+           és el que faria un professor que se n'adona. */
+        if(weak.length&&Math.random()<0.22)          src=weak.concat(pool.slice(0,2));
+        else if(l.k&&l.k.length&&Math.random()<0.6)  src=l.k;      // les tecles noves
+        else                                         src=pool;     // tot el que ja sap
         const len=3+Math.floor(Math.random()*2);
         let s="";
-        for(let i=0;i<len;i++) s+=(l.k&&l.k.length&&Math.random()<0.6)?rnd(l.k):rnd(pool);
+        for(let i=0;i<len;i++) s+=rnd(src);
         return s;
-      },TG);
+      };
+      /* Tres fases, com als manuals: primer l'escala (moviment ordenat),
+         després el viatge fila guia ↔ tecla nova, i finalment grups a
+         l'atzar, que és quan cal recordar de veritat on és cada tecla. */
+      const parts=[];
+      let budget=TG;
+      const add=(tokens,frac)=>{
+        if(!tokens.length||budget<60) return;
+        let i=0;
+        const s=untilTarget(()=>tokens[i++%tokens.length],Math.round(TG*frac));
+        if(s){ parts.push(s); budget-=s.length+1; }
+      };
+      add(scaleTokens(runsFor(poolStr,l.k),3),0.22);
+      add(transitionTokens(l.k),0.20);
+      parts.push(untilTarget(random,Math.max(50,budget)));
+      return parts.join(" ").trim();
     }
     case "words":
-      return pickWords(u,TG,1,99)||drill(cumulativePool(l.id),[],24,3,4);
+      return pickWords(u,TG,1,99,weakKeys(cumulativePool(l.id),3))||drill(cumulativePool(l.id),[],24,3,4);
     case "wordsLen":
-      return pickWords(u,TG,l.min||1,l.max||99)||pickWords(u,TG)||drill("asdfjklñ",[],24,3,4);
+      return pickWords(u,TG,l.min||1,l.max||99,weakKeys(cumulativePool(l.id),3))||pickWords(u,TG)||drill("asdfjklñ",[],24,3,4);
     case "wordsAcc":{
       const acc=D.WORDS_ACC||[];
       const pool=acc.length?acc.concat(D.WORDS.filter(w=>w.length>4)):D.WORDS.filter(w=>w.length>=6);
@@ -1990,7 +2095,12 @@ function renderHome(){
 
   const start=LESSONS.indexOf(nl);
   const box=document.getElementById("nextCards");
-  box.innerHTML=LESSONS.slice(start,start+4).map(lessonCard).join("");
+  /* Una lliçó fluixa ja superada val més repetir-la que deixar-la enrere:
+     una tecla mal apresa arrossega errades a tot el que ve després. */
+  const weakL=LESSONS.filter(x=>{const p=S.prog[x.id]; return p&&p.done&&p.stars<=2;})
+                     .sort((a,b)=>(S.prog[a.id].stars-S.prog[b.id].stars)||(a.id-b.id))[0];
+  const list=LESSONS.slice(start,start+(weakL?3:4));
+  box.innerHTML=(weakL?lessonCard(weakL,true):"")+list.map(x=>lessonCard(x)).join("");
   bindLessonCards(box);
 
   document.getElementById("tipsCard").innerHTML=[1,2,3,4]
@@ -2009,11 +2119,11 @@ document.getElementById("btnGoCourse").onclick=()=>{show("course");renderCourse(
    ============================================================ */
 const MAX_STARS=5;
 const starStr=n=>"★★★★★".slice(0,n)+"☆☆☆☆☆".slice(0,MAX_STARS-n);
-function lessonCard(l){
+function lessonCard(l,review){
   const p=S.prog[l.id]||{}, un=isUnlocked(l), U=UNITS[l.u-1];
   const keys=(l.k||[]).filter(k=>k.length===1).map(k=>`<span class="keychip">${k===" "?"␣":k}</span>`).join("");
-  return `<button class="lesson ${p.done?"done":""} ${un?"":"locked"}" data-id="${l.id}" ${un?"":"disabled"}>
-    <div class="badge-num">${U.ico} ${l.u}.${l.num}</div>
+  return `<button class="lesson ${p.done?"done":""} ${un?"":"locked"} ${review?"review":""}" data-id="${l.id}" ${un?"":"disabled"}>
+    <div class="badge-num">${review?"🔁 "+t("reviewTag"):U.ico+" "+l.u+"."+l.num}</div>
     <div class="lt">${un?"":"🔒 "}${pick(l.t)}</div>
     <div class="keychips">${keys}</div>
     <div class="lk">${fmt(t("lGoal"),{n:l.goal})} ${p.ppm?fmt(t("lRecord"),{n:p.ppm}):""}</div>
@@ -2064,7 +2174,7 @@ function renderCourse(){
    11. INTRO DE LLIÇÓ
    ============================================================ */
 let current=null;
-const MODE_DESC={keys:"dKeys",words:"dWords",wordsLen:"dWordsLen",wordsAcc:"dWordsAcc",sent:"dSent",
+const MODE_DESC={keys:"dKeys",rows:"dRows",words:"dWords",wordsLen:"dWordsLen",wordsAcc:"dWordsAcc",sent:"dSent",
   text:"dText",upperL:"dUpperL",upperR:"dUpperR",names:"dNames",accents:"dAccents",punct:"dPunct",
   numbers:"dNumbers",bigrams:"dBigrams"};
 function openLesson(l){

@@ -46,6 +46,28 @@ Cada persona té el seu propi perfil amb el seu curs, el seu progrés i el seu i
 - Estrelles, XP, nivells, 22 premis, ratxa de dies i gràfic d'evolució.
 - Joc «Pluja de paraules» i diploma imprimible.
 
+## El mètode
+
+Segueix l'estructura dels manuals de mecanografia de tota la vida, que van per
+aquest ordre dins de cada lliçó:
+
+1. **Escales.** La fila sencera en ordre, del dit petit a l'índex i tornant
+   enrere: `asdfg asdfg gfdsa`, `ñlkjh ñlkjh hjklñ`. No cal llegir-les, i això
+   deixa tota l'atenció per als dits; a més garanteixen que cada dit treballa
+   exactament igual, cosa que uns grups a l'atzar no fan.
+2. **Combinacions de files.** El viatge de la fila guia a la tecla nova i tornar:
+   `ded ede dede`, `fvf vfv`. És on es concentren les errades — al recorregut del
+   dit, no a la tecla — i per això els manuals ho tracten a part.
+3. **Grups a l'atzar.** Ara sí cal recordar on és cada tecla, sense la crossa de
+   la seqüència.
+4. **Paraules**, **frases** i **textos**.
+
+Les unitats 1, 2, 3 i 5 tenen a més una lliçó d'escales pura, i els exercicis
+reforcen soles les tecles que més es fallen: si falla sovint la ñ, la ñ comença a
+sortir més als grups i surten més paraules que en tenen.
+
+Les fonts consultades per contrastar el mètode són al final d'aquest fitxer.
+
 ## Com es puntua
 
 Cada lliçó dóna dues valoracions de 0 a 5 estrelles i una nota final.
@@ -102,3 +124,19 @@ certifica res.
   exercicis de tecles soltes s'escriuen molt més de pressa i falsejarien la meta.
 - 300 ppm ≈ 60 paraules per minut, el nivell d'un adult que escriu bé. Amb 10-15 minuts
   al dia és una meta de mesos: la constància importa més que la durada de cada sessió.
+
+## Fonts
+
+- [Touch typing (Wikipedia)](https://en.wikipedia.org/wiki/Touch_typing) — origen del
+  mètode i principi de tornar sempre a la fila guia.
+- [How To Type — The Home Row](https://www.how-to-type.com/touch-typing-lessons/how-to-type-home-keys/)
+  — ordre d'introducció: primer `asdf jkl;`, la G i la H després.
+- [Curso de mecanografía (monografias.com)](https://www.monografias.com/trabajos12/mecan/mecan)
+  — estructura clàssica: exercicis maquinals, majúscules i signes, números,
+  paraules, frases, textos i velocitat.
+- [Mecanografía Online — ejercicios por filas](https://www.mecanografia-online.com/rows)
+  — exercicis agrupats per files, començant per la fila de base.
+- [Keyboarding instruction: comparison of techniques (Taylor & Francis)](https://www.tandfonline.com/doi/full/10.1080/19411243.2018.1512067)
+  i [Effectiveness of two keyboarding instructional approaches](https://www.researchgate.net/publication/336599214_Effectiveness_of_Two_Keyboarding_Instructional_Approaches_on_the_Keyboarding_Speed_Accuracy_and_Technique_of_Elementary_Students)
+  — un currículum estructurat supera les activitats web lliures a primària, i el
+  llistó de precisió que es manté com a referència és el 95 %.

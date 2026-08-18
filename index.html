@@ -160,6 +160,9 @@ h2.sec .sub{font-size:13px;font-weight:600;color:var(--ink-3);margin-left:auto}
 .btn:hover{transform:translateY(-1px);box-shadow:var(--shadow)}
 .btn.primary{background:linear-gradient(135deg,var(--primary),#8b5cf6);color:#fff;border-color:transparent;box-shadow:0 10px 22px -12px var(--primary)}
 .btn.ghost{background:transparent}
+/* Botó destructiu: apartat de la resta perquè no es premi sense voler */
+.btn.danger{background:transparent;color:var(--bad);border-color:transparent;font-size:18px;padding:12px 14px;margin-left:6px;opacity:.65}
+.btn.danger:hover{opacity:1;background:var(--bad-soft);border-color:color-mix(in srgb,var(--bad) 35%,transparent)}
 .btn.big{padding:15px 28px;font-size:16px;border-radius:16px}
 .btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
 
@@ -2864,6 +2867,7 @@ function profileForm(p,isEdit,onDone){
     <div class="actions">
       <button class="btn primary" id="pfSave">${isEdit?t("saveB"):t("createProfile")}</button>
       ${first?"":`<button class="btn ghost" id="pfCancel">${t("cancelB")}</button>`}
+      ${isEdit?`<button class="btn danger" id="pfDel" title="${t("deleteProfile")}" aria-label="${t("deleteProfile")}">🗑️</button>`:""}
     </div>
   </div>`;
   document.body.appendChild(ov);
@@ -2892,6 +2896,9 @@ function profileForm(p,isEdit,onDone){
   ov.querySelector("#pfCam").onclick=()=>openCamera(d=>{ avatar=d; paint(); });
   ov.querySelector("#pfUp").onclick=()=>pickImage(d=>{ avatar=d; paint(); });
   const cancel=ov.querySelector("#pfCancel"); if(cancel) cancel.onclick=()=>ov.remove();
+  /* Esborrar el perfil que s'està editant (demana confirmació) */
+  const del=ov.querySelector("#pfDel");
+  if(del) del.onclick=()=>{ ov.remove(); deleteProfileFlow(p); };
   ov.querySelector("#pfSave").onclick=()=>{
     const name=ov.querySelector("#pfName").value.trim();
     if(!name){ alert(t("nameRequired")); return; }
